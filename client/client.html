@@ -19,6 +19,7 @@
 </body>
 
 <script>
+    const ws = new WebSocket('ws://localhost:3030/ws');
     const sendMessageForm = document.getElementById("send-message-form");
     const messageList = document.getElementById("messages");
 
@@ -39,5 +40,14 @@
     }
 
     sendMessageForm.onsubmit = onSubmit;
+
+    ws.onopen = function () {
+        console.log('WebSocket Client Connected');
+        ws.send('Hi this is web client.');
+    };
+
+    ws.onmessage = function (e) {
+        addMessage('Server', e.data);
+    };
 </script>
 </html>
