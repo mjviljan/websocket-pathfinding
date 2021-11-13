@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>WebSocket client</title>
+</head>
+
+<body>
+<form action="#" method="post" id="send-message-form">
+    <label>
+        Send message:<br/>
+        <input type="text" name="message"/>
+    </label>
+</form>
+<div id="messageArea">
+    <p>Waiting for messages...</p>
+    <ul id="messages">
+    </ul>
+</div>
+</body>
+
+<script>
+    const sendMessageForm = document.getElementById("send-message-form");
+    const messageList = document.getElementById("messages");
+
+    const addMessage = (sender, msg) => {
+        const elem = document.createElement("li");
+        elem.innerText = `${sender}: ${msg}`;
+        messageList.appendChild(elem);
+    }
+
+    const onSubmit = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const form = event.target;
+        addMessage('Me', form.message.value);
+
+        form.reset();
+    }
+
+    sendMessageForm.onsubmit = onSubmit;
+</script>
+</html>
