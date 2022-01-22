@@ -1,22 +1,30 @@
-use warp::{Filter, Rejection, Reply};
-use warp::ws::WebSocket;
+use std::collections::HashMap;
 
-async fn client_connection(ws: WebSocket) {
-    println!("establishing client connection... {:?}", ws);
-}
+use warp::Filter;
 
-async fn ws_handler(ws: warp::ws::Ws) -> Result<impl Reply, Rejection> {
-    println!("ws_handler");
-    Ok(ws.on_upgrade(move |socket| client_connection(socket)))
+const CLIENT_FOLDER: &str = "client/";
+
+async fn register_new_user(form_data: HashMap<String, String>) -> Result<impl warp::Reply, warp::Rejection> {
+    println!("Got registration request...");
+    println!("Got body: {:?}", form_data);
+    Ok(warp::reply::with_status(format!("Registration done for {}", form_data.get("username").unwrap()), warp::http::StatusCode::OK))
 }
 
 #[tokio::main]
 async fn main() {
-    let hello = warp::path("ws")
-        .and(warp::ws())
-        .and_then(ws_handler);
+    let register = warp::post()
+        .and(warp::path("register"))
+        .and(warp::body::form::<HashMap<String, String>>())
+        .and_then(register_new_user);
 
-    warp::serve(hello)
+    let api = register;
+
+    let pages = warp::fs::dir(CLIENT_FOLDER);
+    let static_pages = pages;
+
+    let routes = api.or(static_pages);
+
+    warp::serve(routes)
         .run(([127, 0, 0, 1], 3030))
         .await;
 }
