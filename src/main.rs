@@ -50,3 +50,13 @@ async fn main() {
         .run(([127, 0, 0, 1], 3030))
         .await;
 }
+
+#[tokio::test]
+async fn test_register_new_user_without_username_should_fail() {
+    let reg_result = register_new_user(HashMap::new()).await;
+
+    match reg_result {
+        Ok(_) => panic!("Registration should fail if no username was given"),
+        Err(rejection) => assert!(matches!(rejection.find(), Some(ApiError::UsernameMissing)))
+    }
+}
