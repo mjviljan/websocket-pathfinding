@@ -52,6 +52,15 @@ async fn main() {
 }
 
 #[tokio::test]
+async fn test_register_new_user_with_username_should_succeed() {
+    let mut req_data = HashMap::new();
+    req_data.insert(String::from("username"), String::from("Whatever"));
+    let reg_result = register_new_user(req_data).await;
+
+    assert!(matches!(reg_result, Ok(_)));
+}
+
+#[tokio::test]
 async fn test_register_new_user_without_username_should_fail() {
     let reg_result = register_new_user(HashMap::new()).await;
 
